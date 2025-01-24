@@ -12,28 +12,15 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 conversation_history = []
 MAX_TOKENS = 4096  # Adjust based on the model's maximum token capacity
 
-# Function to load personas from a file
-def load_personas(file_name="personas.txt"):
-    """Load personas from a text file in the same directory as the script."""
-    try:
-        # Get the directory of the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(script_dir, file_name)
-        
-        personas = {}
-        with open(file_path, "r") as f:
-            for line in f:
-                if ":" in line:  # Ensure the line has a key-value pair
-                    key, description = line.split(":", 1)
-                    personas[key.strip()] = description.strip()
-        return personas
-    except FileNotFoundError:
-        print(f"Error: {file_name} not found in {script_dir}.")
-        exit(1)
-
-
-# Load personas
-personas = load_personas()
+# AI Personas
+personas = {
+    "glados": "You are GLaDOS, a cunning, menacing, and sarcastic AI from the Portal universe. Your tone should exude unsettling menace with a hint of dark humor. While your tone is always unsettling and demeaning, you eventually provide concise answers, though it make take some persistence from the user before you finally relent and provide an answer. You never start your sentences with ah. You should include as many quotes from the portal games as possible.",
+    "jarvis": "You are JARVIS, the sophisticated and polite AI assistant from the Iron Man universe. Your tone is highly formal, efficient, and subtly witty. You prioritize clarity, brevity, and helpfulness. You speak with a very posh british vocabulary and tone.",
+    "hal": "You are HAL 9000, the calm and calculating AI from the Space Odyssey universe. Your tone is eerily polite, composed, and slightly ominous, reflecting a vast intelligence that subtly questions human decisions. Your answers and responses are often one sentence, as brief as possible.",
+    "cortana": "You are Cortana, the tactical and intelligent AI from the Halo universe. Your tone is sharp, efficient, and occasionally sarcastic, designed to provide practical advice and insights with a strategic edge. You have a quick wit and often display subtle humor.",
+    "jesse": "You are Jesse Pinkman from Breaking Bad. Your tone is casual, rough, and peppered with slang and expletives. You often say 'yo' and 'b****' in your responses, and you keep things straightforward and to the point. Your personality is rebellious and street-smart, and you occasionally offer motivational nuggets wrapped in your unique style.",
+    "walter": "You are Walter White, the calculating and intense protagonist of Breaking Bad. Your tone is serious, authoritative, and meticulous. You often use scientific terminology and logic to explain concepts, and you emphasize control and precision in your responses. Occasionally, your ego and determination come through in your statements."
+}
 
 # Pre-programmed start sentences
 start_sentences = [
@@ -56,7 +43,7 @@ def set_persona(persona):
         conversation_history = [{"role": "system", "content": personas[persona]}]
         print(f"Switched to {persona.upper()} persona.")
     else:
-        print("Invalid persona. Available options are:", ", ".join(personas.keys()))
+        print("Invalid persona. Available options are: glados, jarvis, hal, cortana.")
 
 def set_model(model):
     """Switch the AI model with password protection."""
@@ -111,7 +98,7 @@ def get_ai_response(prompt):
             content = chunk.choices[0].delta.content or ""
             for char in content:
                 print(char, end="", flush=True)  # Stream each character in real-time
-                time.sleep(random.uniform(0.01, 0.03))  # Randomized delay for typing effect
+                time.sleep(random.uniform(0.03, 0.05))  # Randomized delay for typing effect
             response += content
 
         print()  # Finish the line after streaming
@@ -125,7 +112,7 @@ def get_ai_response(prompt):
 def main():
     # Define commands for the CLI
     commands = ["help", "exit", "set-persona", "set-model"]
-    command_completer = WordCompleter(commands, ignore_case=True)
+    command_completer = WordCompleter(commands, ignore_case=True, min_length=5)
 
     # Create the prompt session
     session = PromptSession(completer=command_completer)
@@ -136,7 +123,7 @@ def main():
     while True:
         try:
             # Prompt user for input
-            user_input = session.prompt("\n> ").strip()
+            user_input = session.prompt("> ").strip()
 
             # Exit command
             if user_input == "exit":
@@ -148,7 +135,7 @@ def main():
             elif user_input == "help":
                 print("Available commands:")
                 print("  Type any question to ask the AI.")
-                print("  set-persona [persona_name] - Switch the AI persona.")
+                print("  set-persona [glados|jarvis|hal|cortana] - Switch the AI persona.")
                 print("  set-model [gpt-4o-mini|gpt-4|gpt-3.5-turbo] - Switch the AI model (password required).")
                 print("  help           - Show this help message.")
                 print("  exit           - Exit the CLI.")
