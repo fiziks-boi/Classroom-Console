@@ -16,7 +16,7 @@ source venv/bin/activate
 
 # Run the script
 echo "Starting AI CLI..."
-python ai_script.py
+python class_console_with_personas.py
 
 # Deactivate the virtual environment when done
 deactivate
