@@ -1,6 +1,5 @@
 import os
 from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import WordCompleter
 from openai import OpenAI
 import time
 import random
@@ -110,12 +109,8 @@ def get_ai_response(prompt):
         return f"Error: {e}"
 
 def main():
-    # Define commands for the CLI
-    commands = ["help", "exit", "set-persona", "set-model"]
-    command_completer = WordCompleter(commands, ignore_case=True, min_length=5)
-
     # Create the prompt session
-    session = PromptSession(completer=command_completer)
+    session = PromptSession()
 
     # Display a single random start sentence at the beginning
     print(random.choice(start_sentences))
