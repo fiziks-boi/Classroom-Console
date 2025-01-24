@@ -10,6 +10,3 @@ __pycache__/
 # Ignore IDE-specific files
 .idea/
 .vscode/
-
-Admin Key.txt
-API Key.txt
